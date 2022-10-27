@@ -1,0 +1,21 @@
+name: Build Docker Prepare Image
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: Build the Prepare Docker image
+      run: docker build . --file Dockerfile-prepare --tag pyramid-shetran-prepare
+    # Testing removed temporarily.
+    # To test successfully, an appropriate dataset will need to be downloaded from DAFNI
+    # and mounted properly into the Docker container.
+    #- name: test
+    #  run: docker run -v "$(pwd)/data:/data" pyramid-read-external-dummy
