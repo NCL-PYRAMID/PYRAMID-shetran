@@ -1,0 +1,57 @@
+<?xml version=1.0?><ShetranInput>
+<ProjectFile>Foston_Beck_at_Foston_MillProjectFile</ProjectFile>
+<CatchmentName>Foston_Beck_at_Foston_Mill_snow</CatchmentName>
+<DEMMeanFileName>demAsciiFoston_Beck_at_Foston_Mill.txt</DEMMeanFileName> This is used to caculate the elevations of the grid squares
+<DEMminFileName>minDemAsciiFoston_Beck_at_Foston_Mill.txt</DEMMinFileName> This is used to caculate the location and elevations of the river channels. If it is not avilable the mean dem
+<MaskFileName>maskAsciiFoston_Beck_at_Foston_Mill.txt</MaskFileName>
+<VegMap>LandCoverAsciiFoston_Beck_at_Foston_Mill.txt</VegMap> Vegetation / land-use map. The number of categories must correspond to those in Vegetation details
+<SoilMap>soilAsciiFoston_Beck_at_Foston_Mill.txt</SoilMap> Soil category map. the number of categories must correspond to those in Soil details
+<LakeMap></LakeMap>  No lakes
+<PrecipMap>RainAsciiFoston_Beck_at_Foston_Mill.txt</PrecipMap> Spatial distibution of precipitation stations
+<PeMap>PEAsciiFoston_Beck_at_Foston_Mill.txt</PeMap> Spatial distibution of PE stations
+<VegetationDetails><VegetationDetail>Veg Type #, Vegetation Type, Canopy storage capacity (mm), Leaf area index, Maximum rooting depth(m), AE/PE at field capacity,Strickler overland flow coefficient</VegetationDetail>
+<VegetationDetail>1, Arable, 1.5, 1, 0.8, 0.6, 1.5</VegetationDetail>
+<VegetationDetail>2, BareGround, 0, 0, 0.1, 0.4, 2.0</VegetationDetail>
+<VegetationDetail>3, Grass, 1.5, 1, 1.0, 0.6, 1.0</VegetationDetail>
+<VegetationDetail>4, DeciduousForest, 5, 1, 1.6, 1.0, 0.5</VegetationDetail>
+<VegetationDetail>5, EvergreenForest, 5, 1, 2.0, 1.0, 0.5</VegetationDetail>
+<VegetationDetail>6, Shrub, 1.5, 1, 1.0, 0.4, 1.0</VegetationDetail>
+<VegetationDetail>7, Urban, 0.3, 0.3, 0.5, 0.4, 5.0</VegetationDetail>
+</VegetationDetails>
+<SoilProperties>
+<SoilProperty>Soil Number,Soil Type, Saturated Water Content, Residual Water Content, Saturated Conductivity (m/day), vanGenuchten- alpha (cm-1), vanGenuchten-n</SoilProperty>
+<SoilProperty>1,Medium(18%:clay:35%And:15%sandOr18%:clayAnd15%:sand:65%)Topsoil,0.439, 0.01, 12.061, 0.0314, 1.1804</SoilProperty>
+<SoilProperty>2,CHLK, 0.3, 0.2, 0.1, 0.1, 5</SoilProperty>
+<SoilProperty>3,MARL_A, 0.3, 0.2, 0.001, 0.1, 5</SoilProperty>
+</SoilProperties>
+<SoilDetails>
+<SoilDetail>Soil Category, Soil Layer, Soil Type, Depth at base of layer (m)</SoilDetail>
+<SoilDetail>1, 1, 1, 1.2</SoilDetail>
+<SoilDetail>1, 2, 2, 95.8</SoilDetail>
+<SoilDetail>2, 1, 1, 1.2</SoilDetail>
+<SoilDetail>2, 2, 2, 95.87</SoilDetail>
+<SoilDetail>3, 1, 1, 1.2</SoilDetail>
+<SoilDetail>3, 2, 3, 5.59</SoilDetail>
+<SoilDetail>3, 3, 2, 95.59</SoilDetail>
+</SoilDetails>
+<InitialConditions>0</InitialConditions> Initial water table depth below ground
+<PrecipitationTimeSeriesData>RainTimeSeriesFoston_Beck_at_Foston_Mill.csv</PrecipitationTimeSeriesData> Precipitation time series. Units are in mm in the timestep length in PrecipitationTimeStep. In this case mm/day 
+<PrecipitationTimeStep>24</PrecipitationTimeStep> >  Timestep in hours
+<EvaporationTimeSeriesData>PETimeSeriesFoston_Beck_at_Foston_Mill.csv</EvaporationTimeSeriesData> PE  time series. Units are in mm in the timestep length in EvaporationTimeStep. In this case mmm/day 
+<EvaporationTimeStep>24</EvaporationTimeStep> >  Timestep in hours
+<MaxTempTimeSeriesData>MaxTempTimeSeriesFoston_Beck_at_Foston_Mill.csv</MaxTempTimeSeriesData> Maximum Temperature time series for snow melt. spatial distribution is the same as for PE. 
+<MinTempTimeSeriesData>MinTempTimeSeriesFoston_Beck_at_Foston_Mill.csv</MinTempTimeSeriesData> Minimum Temperature time series for snow melt. spatial distribution is the same as for PE. Average temperature for snow melt caculated from the mean of min and max. 
+<StartDay>01</StartDay>
+<StartMonth>01</StartMonth>
+<StartYear>1980</StartYear>
+<EndDay>01</EndDay>
+<EndMonth>01</EndMonth>
+<EndYear>1981</EndYear>
+<RiverGridSquaresAccumulated>100</RiverGridSquaresAccumulated> Number of upstream grid squares needed to produce a river channel. A larger number will have fewer river channels
+<DropFromGridToChannelDepth>4</DropFromGridToChannelDepth> The standard and minimum value is 2 if there are numerical problems with error 1060 this can be increased
+<MinimumDropBetweenChannels>0.1</MinimumDropBetweenChannels> This depends on the grid size and how steep the catchment is. A value of 1 is a sensible starting point but more gently sloping catchments it can be reduced.
+<RegularTimestep>1.0</RegularTimestep> This is the standard Shetran timestep it is autmatically reduced in rain. The standard value is 1 hour. The maximum allowed value is 2 hours
+<IncreasingTimestep>0.05</IncreasingTimestep> speed of increase in timestep after rainfall back to the standard timestep. The standard value is 0.05. If if there are numerical problems with error 1060 it can be reduced to 0.01 but the simulation will take longer.
+<SimulatedDischargeTimestep>24.0</SimulatedDischargeTimestep> This should be the same as the measured discharge
+<SnowmeltDegreeDayFactor>0.0002</SnowmeltDegreeDayFactor> Units  = mm s-1 C-1
+</ShetranInput>

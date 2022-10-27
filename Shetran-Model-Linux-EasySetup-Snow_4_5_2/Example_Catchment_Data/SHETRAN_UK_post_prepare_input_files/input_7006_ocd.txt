@@ -1,0 +1,43 @@
+:OC1 - TEST CATCHMENT- OC COMPONENT DATA SET: NT, NCATR, KONT, BIOWAT           
+      1      6      1      F
+:OC2 - TIMESTEP CONTROL (currently not used)                                    
+ 1.0000 99999.
+:OC3 - OTHER PARAMETERS. SMIN,CDRS,TDC,TFC,DET. (SMIN & DET not used)           
+ 100.00    0.0    0.0 99999.    0.0
+    0.0    0.0    0.0    0.0 0.2500 2.0000
+:OC14 STRX                                                                      
+      8 00000000
+      7 00005500
+      6 00555550
+      5 00655500
+      4 00655600
+      3 06666000
+      2 00060000
+      1 00000000
+:OC17 STRY                                                                      
+      8 00000000
+      7 00005500
+      6 00555550
+      5 00655500
+      4 00655600
+      3 06666000
+      2 00060000
+      1 00000000
+:OC20 - HEAD AND FLUX BOUNDARY CONDITIONS: NOCHB, NOCFB, NOCPB                  
+      0      0      0
+:OC30 - NUMBER OF DEFAULT CHANNEL CROSS-SECTIONS                                
+      0
+:OC35 - CHANNEL LINK DATA(LINK NO.,BED ELEV.,DEPTH, STR. COEFF.,DEF X-S)        
+      1 341.00    0.0 3.0000      2
+ 3.7775    0.0 3.7775 1.5000
+      2 316.00    0.0 3.0000      2
+ 6.5428    0.0 6.5428 1.5000
+      3 278.00    0.0 20.000      2
+ 8.0133    0.0 8.0133 1.5000
+      4 270.00    0.0 20.000      2
+ 9.6307    0.0 9.6307 1.5000
+      5 261.00    0.0 20.000      2
+ 11.013    0.0 11.013 1.5000
+      6 241.00    0.0 20.000      2
+ 11.643    0.0 11.643 1.5000
+             2 50.000 0.7000 241.10 240.00

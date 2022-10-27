@@ -1,0 +1,29 @@
+ XML filname = 
+ C:/BenSmith/Blade_SHETRANGB_OpenCLIM_Hist1980_2010_050722/7006/7006_LibraryFile
+ .xml
+ 
+ DEM filname = 
+ C:\BenSmith\Blade_SHETRANGB_OpenCLIM_Hist1980_2010_050722\7006\7006_DEM.asc
+ Minimum DEM filname = 
+ C:\BenSmith\Blade_SHETRANGB_OpenCLIM_Hist1980_2010_050722\7006\7006_MinDEM.asc
+ Catchment Mask filname = 
+ C:\BenSmith\Blade_SHETRANGB_OpenCLIM_Hist1980_2010_050722\7006\7006_Mask.asc
+ Land use distribution filname = 
+ C:\BenSmith\Blade_SHETRANGB_OpenCLIM_Hist1980_2010_050722\7006\7006_LandCover.a
+ sc
+ Soil category distribution filname = 
+ C:\BenSmith\Blade_SHETRANGB_OpenCLIM_Hist1980_2010_050722\7006\7006_Soil.asc
+ Lakemap = 
+ 7006_Lake.asc                                                                  
+                                                                                
+                                           
+ Precipitation Distribution Filename = 
+ C:\BenSmith\Blade_SHETRANGB_OpenCLIM_Hist1980_2010_050722\7006\7006_Cells.asc
+ Potential Evaporation Distribution Filname = 
+ C:\BenSmith\Blade_SHETRANGB_OpenCLIM_Hist1980_2010_050722\7006\7006_Cells.asc
+ Precpitation data = 7006_Precip.csv
+ Potential Evaporation data = 7006_PET.csv
+ Number of river chanel sinks =            0
+ 
+  Number of land element sinks =            1
+  Number of land element sinks =            0
