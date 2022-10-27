@@ -1,1 +1,30 @@
-
+kind: Model
+api_version: v1beta1
+metadata:
+  display_name: PYRAMID <model> SHETRAN run
+  name: pyramid-shetran-run
+  summary: Runs SHETRAN
+  publisher: Newcastle University
+  description: >
+    Runs SHETRAN
+spec:
+  inputs:
+    parameters:
+      - name: NAME
+        title: Run name
+        type: string
+        description: Name for the run, used in the title field of the metadata file.
+        default: PYRAMID <model> SHETRAN run
+        required: true
+    dataslots:
+      - name: Prepared SHETRAN data
+        description: >
+          Description of the dataset format
+        default:
+          - 24830682-c2dd-4066-b64c-951484a2185d
+        path: inputs
+        required: true
+  outputs:
+    datasets:
+      - name: PYRAMID <model> SHETRAN results
+        description: Results from a PYRAMID SHETRAN run

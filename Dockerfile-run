@@ -1,1 +1,20 @@
+FROM python:3.8
 
+RUN apt update -y
+RUN apt upgrade -y
+RUN apt install -y gfortran
+
+RUN mkdir -p /data/inputs
+RUN mkdir -p /data/outputs
+
+WORKDIR /shetran
+
+COPY ./Shetran-Model-Linux-EasySetup-Snow_4_5_2/Shetran-Linux ./
+COPY ./Shetran-Model-Linux-EasySetup-Snow_4_5_2/*.so* ./
+COPY ./Shetran-Model-Linux-EasySetup-Snow_4_5_2/run_run.py ./
+
+RUN chmod +x Shetran-Linux
+
+ENV PLATFORM="docker"
+
+ENTRYPOINT ["python", "-u", "run_run.py"]
