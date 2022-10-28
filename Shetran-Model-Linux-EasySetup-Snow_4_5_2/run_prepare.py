@@ -12,9 +12,10 @@ outputs = os.path.join(data_path, 'outputs')
 if os.path.exists(outputs):
     shutil.rmtree(outputs)
 
-os.mkdir(outputs)
+#os.mkdir(outputs)
 
-run_path = os.path.join(outputs, 'shetran')
+#un_path = os.path.join(outputs, 'shetran')
+run_path = outputs
 
 shutil.copytree(inputs, run_path)
 
