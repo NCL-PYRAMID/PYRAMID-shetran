@@ -19,7 +19,10 @@ jobs:
 
       - name: Compress docker image
         run: docker save pyramid-shetran-run:latest | gzip > pyramid-shetran-run.tar.gz
-
+  
+      - name: Copy correct model-definition.yml file for DAFNI uploader
+        run: cp model-definition-run.yml model-definition.yml
+  
       - name: Set tag as env
         run: echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
