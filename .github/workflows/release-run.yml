@@ -34,4 +34,4 @@ jobs:
           username: ${{ secrets.DAFNI_SERVICE_ACCOUNT_USERNAME }}
           password: ${{ secrets.DAFNI_SERVICE_ACCOUNT_PASSWORD }}
           version-message: ${{ env.TAG }}
-          parent-model: "TBC"
+          parent-model: "6756ebb2-b1f6-41cf-87e1-58533583801d"
