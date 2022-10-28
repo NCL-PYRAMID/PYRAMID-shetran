@@ -19,6 +19,9 @@ jobs:
 
       - name: Compress docker image
         run: docker save pyramid-shetran-prepare:latest | gzip > pyramid-shetran-prepare.tar.gz
+        
+      - name: Move correct model definition file to model-definition.yml
+        run: cp model-definition-prepare.yml model-definition.yml
 
       - name: Set tag as env
         run: echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
