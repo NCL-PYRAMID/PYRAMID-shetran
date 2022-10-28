@@ -9,26 +9,26 @@ data_path = os.getenv('DATA_PATH', '/data')
 inputs = os.path.join(data_path, 'inputs')
 outputs = os.path.join(data_path, 'outputs')
 
+# Remove existing outputs and recreate outputs folder (useful locally):
 if os.path.exists(outputs):
     shutil.rmtree(outputs)
-
 os.mkdir(outputs)
 
 run_path = os.path.join(outputs, 'shetran')
 
 shutil.copytree(inputs, run_path)
 
+# Find the rundata file from the inputs:
 try:
-    library = glob(os.path.join(run_path, '*.txt'))[0]
+    rundata_file = glob(os.path.join(run_path, 'rundata_*'))[0]
 except IndexError:
-    raise Exception('Library file missing')
+    raise Exception('rundata file missing')
 
+# Run the SHETRAN model:
+subprocess.call(['./Shetran-Linux', '-f', rundata_file])
 
-subprocess.call(['./Shetran-Linux', library])
-# subprocess.call(['./shetran-linux', '-f', glob(os.path.join(run_path, 'rundata_*'))[0]])
-
-title = os.getenv('TITLE', 'SHETran run')
-description = 'SHETRAN simulaiton.'
+title = os.getenv('TITLE', 'SHETRAN Simualtion')
+description = 'Run a SHETRAN simulation using outputs from a SHETRAN prepare model/workflow.'
 geojson = {}
 
 
