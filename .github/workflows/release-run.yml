@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Docker Build
-        run: docker build -t pyramid-shetran-run:latest .
+        run: docker build . -t pyramid-shetran-run:latest -f Dockerfile-run
 
       - name: Compress docker image
         run: docker save pyramid-shetran-run:latest | gzip > pyramid-shetran-run.tar.gz
