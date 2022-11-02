@@ -15,6 +15,8 @@ COPY ./Shetran-Model-Linux-EasySetup-Snow_4_5_2/run_run.py ./
 
 RUN chmod +x Shetran-Linux
 
+ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$(pwd)
+
 ENV PLATFORM="docker"
 
-ENTRYPOINT ["python", "-u", "run_run.py"]
+CMD ["python", "-u", "run_run.py"]

@@ -17,4 +17,4 @@ RUN chmod +x shetran-prepare-snow
 
 ENV PLATFORM="docker"
 
-ENTRYPOINT ["python", "-u", "run_prepare.py"]
+CMD ["python", "-u", "run_prepare.py"]

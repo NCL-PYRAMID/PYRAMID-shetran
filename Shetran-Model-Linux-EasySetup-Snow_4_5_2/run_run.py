@@ -12,9 +12,10 @@ outputs = os.path.join(data_path, 'outputs')
 # Remove existing outputs and recreate outputs folder (useful locally):
 if os.path.exists(outputs):
     shutil.rmtree(outputs)
-os.mkdir(outputs)
+#os.mkdir(outputs)
 
-run_path = os.path.join(outputs, 'shetran')
+#run_path = os.path.join(outputs, 'shetran')
+run_path = outputs
 
 shutil.copytree(inputs, run_path)
 
