@@ -23,7 +23,7 @@ spec:
         default:
           - b8b5cc08-08b2-4152-b832-37f7075f5798
         path: inputs
-        required: true
+        required: false
   outputs:
     datasets:
       - name: PYRAMID <model> SHETRAN results
