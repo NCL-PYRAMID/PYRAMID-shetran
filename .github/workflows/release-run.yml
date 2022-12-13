@@ -1,9 +1,9 @@
 name: Upload SHETRAN run to DAFNI
 
 on:
-  release:
-    types: [published]
-    
+  push:
+    tags:
+      - 'v*.*.*'
   workflow_dispatch:
 
 jobs:
