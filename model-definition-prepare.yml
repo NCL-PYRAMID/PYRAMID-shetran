@@ -1,5 +1,5 @@
-kind: Model
-api_version: v1beta1
+kind: M
+api_version: v1beta2
 metadata:
   display_name: PYRAMID <model> SHETRAN prepare
   name: pyramid-shetran-prepare
@@ -27,4 +27,5 @@ spec:
   outputs:
     datasets:
       - name: PYRAMID <model> SHETRAN prepare output
+        type: txt
         description: Prepared SHETRAN data for SHETRAN run
