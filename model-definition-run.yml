@@ -21,7 +21,7 @@ spec:
         description: >
           Description of the dataset format
         default:
-          - a879ea9f-5380-4293-ace9-d3813ff946a1
+          - 202e3d8f-1a50-4190-9cdc-a0e488d9fcba
         path: inputs
         required: false
   outputs:
