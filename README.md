@@ -137,10 +137,10 @@ The deployed models can be run in a DAFNI workflow. See the [DAFNI workflow docu
 - [ ] Feature-Complete Release  
 
 ## Contributing
-TBD
+The PYRAMID SHETRAN for DAFNI project has ended. Pull requests from outside the project team will be ignored.
 
 ### Main Branch
-All development can take place on the main branch. 
+The stable branch is `main`. All development should take place on new branches. Pull requests are enabled on `main`.
 
 ## License
 This code is private to the PYRAMID project.
