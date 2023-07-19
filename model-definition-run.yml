@@ -6,7 +6,15 @@ metadata:
   summary: Runs SHETRAN
   publisher: Newcastle University
   description: >
-    Runs SHETRAN
+    Runs the SHETRAN simulator. Expects data prepared by `pyramid-shetran-prepare` or in a hotstart configuration
+
+    Parameter options:
+    Case A: B_HOT_RD==F, B_HOT_PR==F, B_HOT_TI==any, B_HOT_ST==any: SHETRAN runs normally
+    Case B: B_HOT_RD==F, B_HOT_PR==T, B_HOT_TI==0.0, B_HOT_ST==8670.0: SHETRAN runs for e.g. 1 year (8670.0 hours) and produces a hotstart file; BHOTTI is ignored
+    Case C: B_HOT_RD==T, B_HOT_PR==F, B_HOT_TI==1.0, B_HOT_ST==0.0: SHETRAN runs from the hotstart point at the first step (maybe BHOTTI should be 0.25 if we are doing 15 minutes?), BHOTST is ignored. BHOTTI is real-valued and defines the time to start the simulation at, if in between time values the simulator will pick the nearest (next?)
+    Case D: B_HOT_RD==T, B_HOT_PR==T, B_HOT_TI==any, B_HOT_ST==any: Not permitted, SHETRAN behaviour is undefined
+
+    Model repository: https://github.com/NCL-PYRAMID/PYRAMID-shetran
 spec:
   inputs:
     parameters:
@@ -16,6 +24,56 @@ spec:
         description: Name for the run, used in the title field of the metadata file.
         default: PYRAMID <model> SHETRAN run
         required: true
+
+      - name: RUN_START_DATE
+        title: Start date
+        description: The date at which the Model execution should start.
+        type: string
+        default: "2023-06-20"
+        required: true
+
+      - name: RUN_END_DATE
+        title: End date
+        description: The date at which the Model execution should stop.
+        type: string
+        default: "2023-06-30"
+        required: true
+
+      - name: B_HOT_RD
+        title: SHETRAN hotstart initial conditions reading mode
+        type: boolean
+        description: Mode for reading initial conditions from hotstart file (true = read from hotstart file)
+        default: false
+        required: true
+
+      - name: B_HOT_PR
+        title: SHETRAN hotstart variables printing mode
+        type: boolean
+        description: Mode for printing relevant variables to hotstart file (true = print to hotstart file)
+        default: false
+        required: true
+
+      - name: B_HOT_TI
+        title: SHETRAN hotstart time
+        type: float
+        description: Starting hotstart simulation time (hours)
+        default: 1.0
+        required: true
+
+      - name: B_HOT_ST
+        title: SHETRAN hotstart reading mode
+        type: float
+        description: Timestep for storing data on hotstart file (hours)
+        default: 1.0
+        required: true
+
+      - name: ETD_STEP
+        title: SHETRAN simulation timestep
+        type: float
+        description: Simulation timestep (hours)
+        default: 1.0
+        required: true
+        
     dataslots:
       - name: Prepared SHETRAN data
         description: >
