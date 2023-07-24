@@ -62,21 +62,21 @@ spec:
 
       - name: B_HOT_TI
         title: SHETRAN hotstart time
-        type: float
+        type: number
         description: Starting hotstart simulation time (hours)
         default: 1.0
         required: true
 
       - name: B_HOT_ST
         title: SHETRAN hotstart reading mode
-        type: float
+        type: number
         description: Timestep for storing data on hotstart file (hours)
         default: 0.0
         required: true
 
       - name: ETD_STEP
         title: SHETRAN simulation timestep
-        type: float
+        type: number
         description: Simulation timestep (hours)
         default: 1.0
         required: true
