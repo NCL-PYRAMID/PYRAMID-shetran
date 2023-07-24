@@ -254,7 +254,7 @@ if b_hot_rd == "T":
     # -4- Edit the run data file to find the hotstart file:
     # Direct the rundata file to the hotstart data. This is needed as the simulation _inputs.txt files have been made
     # by a prepare.exe that does not write hotstart parameters.
-    edit_text(rundata_file, "28: hostart file", hotstart_file)
+    edit_text(rundata_file, "28: hostart file", hotstart_file.split(run_path)[-1])
 
     # -5- Change the ETD file to the correct timestep.
     # This will edit the timestep of the rainfall. We are not editing the timestep of the temp/PET as this will use the
