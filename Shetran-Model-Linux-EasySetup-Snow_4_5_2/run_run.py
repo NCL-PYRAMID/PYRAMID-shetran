@@ -275,15 +275,18 @@ if b_hot_rd == "T":
     with open(hotstart_file, 'r') as file:
         lines = file.readlines()
 
-    time_lines = []  # lines[0]
+    time_lines = []
     l = 0
-    while len(time_lines) <= 2:
+    while len(time_lines) <= 2 and l<len(lines):
         if lines[l].startswith(" time="):
             time_lines.append(l)
         l += 1
 
+    if len(time_lines)==3:
+    l = l-1
+
     new_hot_text = [lines[0]]
-    new_hot_text.extend(lines[time_lines[1] + 1:time_lines[2]])
+    new_hot_text.extend(lines[time_lines[1]+1 : l])
 
     with open(hotstart_file, 'w') as file:
         file.writelines(new_hot_text)
