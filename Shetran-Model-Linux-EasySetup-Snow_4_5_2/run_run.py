@@ -216,8 +216,16 @@ if b_hot_rd == "T":
     try:
         hotstart_file = glob(os.path.join(run_path, '*_hot.txt'))[0]
     except IndexError as e:
-        logger.error('Hotstart file missing', exc_info=e)
-        raise
+        logger.error('Hotstart file missing, checking for fort.28 file.', exc_info=e)
+        try:
+            hotstart_file = glob(os.path.join(run_path, 'fort.28'))[0]
+            shutil.copyfile(hotstart_file, os.path.join(run_path, 'fort28_hotstart.txt'))
+            hotstart_file = os.path.join(run_path, 'fort28_hotstart.txt')
+            print('hotstart file incorrectly named; renaming and using fort.28 file.')
+        except IndexError as e:
+            logger.error('fort.28 hotstart file also missing. No hotstart inputs.', exc_info=e)
+            raise
+    
 
     #  Find the _etd.txt file for hotstart:
     try:
