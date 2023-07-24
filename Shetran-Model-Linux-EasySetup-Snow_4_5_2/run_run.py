@@ -23,6 +23,7 @@ import pathlib
 SHETRAN_RUN_FILENAME = "success"
 SHETRAN_RUN_LOG_FILENAME = "read-ea.log"
 METADATA_FILENAME = "metadata.json"
+# toon_monsoon = make_date("2012-06-28") # Has been passed to parameter, ultimately remove!
 
 ###############################################################################
 # Paths
@@ -180,7 +181,6 @@ def make_date(date_string):
 # TODO - undo this botch by setting HiPIMS to read data from SHETRAN using 
 # parameters, instead of being hardcoded to toon monsoon. This code will make 
 # SHETRAN think that it is always starting on 28th June 2012. 
-toon_monsoon = make_date("2012-06-28")
 start_date_dt = make_date(start_date)
 end_date_dt = make_date(end_date)
 date_offset = toon_monsoon - start_date_dt
