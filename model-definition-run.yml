@@ -39,7 +39,7 @@ spec:
         default: "2023-06-30"
         required: true
 
-      - name: toon_monsoon 
+      - name: TOON_MONSOON
         title: Date of Toon Monsoon
         description: Forces SHETRAN to output data with dates starting on this day, that can then be found by HiPIMS, which searches for 28/06/2012.
         type: string

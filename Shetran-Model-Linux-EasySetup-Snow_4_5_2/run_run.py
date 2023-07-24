@@ -102,6 +102,7 @@ def validate_boolean_parameter(p_string):
 # Simulation duration
 start_date = os.getenv("RUN_START_DATE", "2023-06-20")
 end_date = os.getenv("RUN_END_DATE", "2023-06-30")
+toon_monsoon = os.getenv("TOON_MONSOON", "2012-06-28")
 
 # Hotstart boolean parameters
 b_hot_rd = validate_boolean_parameter("B_HOT_RD")
@@ -121,6 +122,23 @@ if b_hot_rd == "T" and b_hot_pr == "T":
     emsg = "Parameter combination not permitted: B_HOT_RD==True and B_HOT_PR==True"
     logger.error(emsg)
     raise ValueError(emsg)
+
+
+###############################################################################
+# Other setup
+###############################################################################
+livedata_pathname = os.path.join(run_path, "SHETRAN")
+rainfall_filepath = glob(os.path.join(livedata_pathname, "*_Precip.csv"))
+if len(rainfall_filepath) == 0:
+    logger.warning("No precipitation files found, using default (results may be unreliable)")
+elif len(rainfall_filepath) > 1:
+    logger.warning("Multiple precipitation files found, using first one (results may be unreliable):")
+    for f in rainfall_filepath:
+        logger.warning("\t{}".format(f))
+    shutil.copyfile(rainfall_filepath[0], os.path.join(run_path, os.path.basename(rainfall_filepath[0])))
+else:
+  logger.info("Using precipitation file {}".format(rainfall_filepath))
+  shutil.copyfile(rainfall_filepath[0], os.path.join(run_path, os.path.basename(rainfall_filepath[0])))
 
 
 ###############################################################################
@@ -175,6 +193,55 @@ def check_hotstart_parameter(hs_param):
 
 def make_date(date_string):
     return datetime.datetime.strptime(date_string, '%Y-%m-%d')
+
+
+def visualisation_plan_remove_item(item_number, vis_file_in=str, vis_file_out=None):
+    """
+    Don't forget that if you use this is combination with the number altering that you need to match the altered number.
+    If you are removing multiple items, remove the higher numbers first.
+    item_number can be a string or integer.
+    Do not specify file_out if you want to overwrite.
+    """
+
+    if vis_file_out == None:
+        vis_file_out = vis_file_in
+
+    with open(vis_file_in, 'r') as vis:
+        updated_text = ""
+        number_corrector = 0
+
+        for line in vis:
+            line = line.strip().split(" : ")
+
+            # IF the line starts with item then skip ('item' will be written later)
+            if line[0] == "item":
+                continue
+
+            # IF the line starts with NUMBER, decide whether to read or write:
+            if line[0][0:len(line[0]) - 2] == "NUMBER":
+
+                # IF it is the number of interest read the next line too, not writing either
+                # and add one to the index corrector:
+                if line[0][-1] == str(item_number):
+                    next(vis)
+                    number_corrector += 1
+
+                # IF a different number:
+                if line[0][-1] != str(item_number):
+                    new_number = int(line[0][-1]) - number_corrector
+                    line[0] = str(line[0][0:len(line[0]) - 1] + str(new_number))
+                    updated_text = updated_text + 'item \n' + " : ".join(line) + "\n" + next(vis)
+
+            # If neither, just copy the line:
+            else:
+                updated_text = updated_text + " : ".join(line) + "\n"
+
+    with open(vis_file_out, "w") as new_vis:
+        new_vis.write(updated_text)
+
+    if new_number == 0:
+        return "WARNING: No lines were edited"
+
 
 
 # TODO - undo this botch by setting HiPIMS to read data from SHETRAN using 
@@ -254,7 +321,7 @@ if b_hot_rd == "T":
     # -4- Edit the run data file to find the hotstart file:
     # Direct the rundata file to the hotstart data. This is needed as the simulation _inputs.txt files have been made
     # by a prepare.exe that does not write hotstart parameters.
-    edit_text(rundata_file, "28: hostart file", hotstart_file.split(run_path)[-1])
+    edit_text(rundata_file, "28: hostart file", hotstart_file.split(run_path)[-1] + "\n")
 
     # -5- Change the ETD file to the correct timestep.
     # This will edit the timestep of the rainfall. We are not editing the timestep of the temp/PET as this will use the
@@ -282,11 +349,16 @@ if b_hot_rd == "T":
             time_lines.append(l)
         l += 1
 
-    if len(time_lines)==3:
-    l = l-1
-
-    new_hot_text = [lines[0]]
-    new_hot_text.extend(lines[time_lines[1]+1 : l])
+        # If using a premade Hotstart file with 1 time entry:
+        if len(time_lines)==1:
+            new_hot_text = lines
+          
+        # If not then set the second timestep to be the first:
+        else:
+            if len(time_lines)==3:
+                l = l-1
+            new_hot_text = [lines[0]]
+            new_hot_text.extend(lines[time_lines[1]+1 : l])
 
     with open(hotstart_file, 'w') as file:
         file.writelines(new_hot_text)
@@ -301,8 +373,8 @@ if b_hot_rd == "T":
     print(vis_plan_file)
 
     for line in ["6", "5", "3", "2", "1"]:
-    visualisation_plan_remove_item(line, vis_plan_file)
-    edit_text(vis_plan_file, "9 1 !", "1 876000 !every hour for 10 years, or until the end of the simulation.\n")
+        visualisation_plan_remove_item(line, vis_plan_file)
+        edit_text(vis_plan_file, "9 1 !", "1 876000 !every hour for 10 years, or until the end of the simulation.\n")
 
 
 # Run the SHETRAN model:
