@@ -64,7 +64,7 @@ spec:
         title: SHETRAN hotstart reading mode
         type: float
         description: Timestep for storing data on hotstart file (hours)
-        default: 1.0
+        default: 0.0
         required: true
 
       - name: ETD_STEP

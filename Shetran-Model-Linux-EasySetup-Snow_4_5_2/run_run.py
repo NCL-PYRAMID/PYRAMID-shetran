@@ -78,13 +78,21 @@ logger.info("output_path = {}".format(output_path))
 # Environmental Parameters
 #   Parameters are passed as environment variables,
 #   i.e. they are strings and will need to be converted where necessary
+#
+#   b_hot_rd: hotstart read, possible values: {"F", "T"}
+#   b_hot_pr: hotstart write (print), possible values: {"F", "T"}
+#   b_hot_ti: hotstart initiation value: Float 0.00 in hrs from start of
+#             simulation. Time when previous model is started.
+#   b_hot_st: hotstart output timestep: Float 0.00 in hrs from start of 
+#             simulation - i.e.-  when we want to restart the model
+#   etd_step: # [0 days 00:15:00]?
 ###############################################################################
 def validate_boolean_parameter(p_string):
     p_val = os.getenv(p_string, "false")
     if p_val == "true":
-      p_val = True
+      p_val = "T"
     elif p_val == "false":
-        p_val = False
+        p_val = "F"
     else:
         e = "Model run terminated: undefined value provided for parameter {} --- {}".format(p_string, p_val)
         logger.error(e)
@@ -102,26 +110,18 @@ b_hot_pr = validate_boolean_parameter("B_HOT_PR")
 # Hotstart duration parameters
 try:
     b_hot_ti = float(os.getenv("B_HOT_TI", "1.0"))
-    b_hot_st = float(os.getenv("B_HOT_ST", "1.0"))
-    edt_step = float(os.getenv("ETD_STEP", "1.0"))
+    b_hot_st = float(os.getenv("B_HOT_ST", "0.0"))
+    etd_step = float(os.getenv("ETD_STEP", "1.0"))
 except (TypeError, ValueError, Exception) as e:
-    logger.error("Error converting parameter: {}".format(e))
+    logger.error("Error converting parameter", exc_info=e)
     raise
 
 # Case D is not permitted
-if b_hot_rd and b_hot_pr:
-    e = "Parameter combination not permitted: B_HOT_RD==True and B_HOT_PR==True"
-    logger.error(e)
-    raise(e)
+if b_hot_rd == "T" and b_hot_pr == "T":
+    emsg = "Parameter combination not permitted: B_HOT_RD==True and B_HOT_PR==True"
+    logger.error(emsg)
+    raise ValueError(emsg)
 
-
-
-
-###############################################################################
-# Auxiliary functions
-###############################################################################
-def handle_hotstart():
-    pass
 
 ###############################################################################
 # Simulator execution
@@ -129,10 +129,137 @@ def handle_hotstart():
 # Find the rundata file from the inputs:
 try:
     rundata_file = glob(os.path.join(run_path, 'rundata_*'))[0]
-except IndexError:
-    raise Exception('rundata file missing')
+except IndexError as e:
+    logger.error('Rundata file missing', exc_info=e)
+    raise
 
-handle_hotstart()
+
+# HOTSTART SECTION
+# +++ ADDED +++
+# 0. Define functions
+# 1. Change the frd file to the correct hotstart parameters
+# 2. Make sure that b_hot_ti is <= etd_step
+# 3. Change the frd file to have the relevant time periods
+# 4. Change the run data file so that it can find the hotstart output file
+# 5. Change the ETD file to the correct timestep.
+# 6. Change the hotstart file so that it is initiated immediately.
+
+# -0- Define functions:
+def edit_text(file_path, frame_name, new_frame_text=None, print_only=False):
+    # frame_name should be the start of the frame identifier in the text file.
+    # e.g. ":FR26" for the HOTSTART PARAMETERS in the _frd file.
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+
+    # If you only want to see the value, not edit it, then use print_only= True
+    if print_only:
+        return lines[frame_search(lines, frame_name) + 1]
+    else:
+        lines[frame_search(lines, frame_name) + 1] = new_frame_text
+        with open(file_path, 'w') as file:
+            file.writelines(lines)
+
+
+def frame_search(file_lines, string):
+    # This will look for a frame number in the lines of a text file.
+    # Frame numbering typically starts with the ':' then the first 2 letters of the SHETRAN file type e.g. FR for _frd
+    return [x for x in range(0, len(file_lines)) if file_lines[x].startswith(string)][0]
+
+
+# -1- Edit the frd file to read / write the hotstart:
+if "T" in [b_hot_rd, b_hot_pr]:
+    # Find the _frd.txt file for hotstart:
+    try:
+        frd_file_path = glob(os.path.join(run_path, '*_frd.txt'))[0]
+    except IndexError as e:
+        logger.error('FRD file missing', exc_info=e)
+        raise
+
+    # Create the new line of parameters. This will only change the rainfall parameter. Future hotstarts may require
+    # more of the parameters changing, e.g. if you use PET of different resolution to the main simulation.
+    edit_text(frd_file_path, ":FR26",
+              f"{b_hot_rd:>7}{b_hot_pr:>7}{b_hot_ti:>7}{b_hot_st:>7}{etd_step:>7}\n")
+
+
+def check_hotstart_parameter(hs_param):
+    if hs_param not in ["T", "F"]:
+        emsg = f"ERROR: hotstart parameter '{hs_param}' incorrectly set. Should be 'T' or 'F'."
+        logger.error(emsg)
+        raise ValueError(emsg)
+
+
+# Raise errors if hotstart parameters are not T/F:
+check_hotstart_parameter(b_hot_rd)
+check_hotstart_parameter(b_hot_pr)
+
+if b_hot_rd == "T":
+    # Find the _hot.txt file for hotstart:
+    try:
+        hotstart_file = glob(os.path.join(run_path, '*_hot.txt'))[0]
+    except IndexError as e:
+        logger.error('Hotstart file missing', exc_info=e)
+        raise
+
+    #  Find the _etd.txt file for hotstart:
+    try:
+        etd_file = glob(os.path.join(run_path, '*_etd.txt'))[0]
+    except IndexError as e:
+        logger.error('ETD file missing', exc_info=e)
+        raise
+
+    # -2- Make sure that b_hot_ti is <= etd_step
+    # Ensure that the hotstart initiation timestep is less than the etd timestep so that the hotstart conditions are
+    # set immediately in the simulation, else the first x met data values will be skipped until the
+    # b_hot_ti is crossed.
+    if b_hot_ti > etd_step:
+        print(f"Setting b_hot_ti ({b_hot_ti}) to etd_step ({etd_step})")
+        b_hot_ti = etd_step
+
+    # -3- Change the frd file to have the relevant time periods:
+    # These should be taken from parameters so that the model knows when to start and end. The main purpose of this is
+    # so that it only runs for as long as there is inout data.
+    # edit_text("./" + frd_file_path, ":FR4", f"{SYEAR:>7}{SMONTH:>7}{SDAY:>7}{SHOUR:>7}{SMINUTE:>7}\n") # SHETRAN Start
+    # edit_text("./" + frd_file_path, ":FR5", f"{EYEAR:>7}{EMONTH:>7}{EDAY:>7}{EHOUR:>7}{EMINUTE:>7}\n") # SHETRAN End
+
+    # -4- Edit the run data file to find the hotstart file:
+    # Direct the rundata file to the hotstart data. This is needed as the simulation _inputs.txt files have been made
+    # by a prepare.exe that does not write hotstart parameters.
+    edit_text(rundata_file, "28: hostart file", hotstart_file)
+
+    # -5- Change the ETD file to the correct timestep.
+    # This will edit the timestep of the rainfall. We are not editing the timestep of the temp/PET as this will use the
+    # first X days of the original data. This is a shortcut and future versions should read in new temp/PET data and
+    # update the etd time steps as appropriate.
+    text = edit_text(etd_file, ":ET3", print_only=True).split()
+    edit_text(etd_file, ":ET3", f"{text[0]:>7}{etd_step:>7}{text[2]:>7}\n")
+
+    # -6- Change hotstart time.
+    # In theory, the hotstart timestep parameter is the time, in hrs, from the start of the simulation at which
+    # you want to restart the simulation. If this is after 5 years, and the simulation is 15 years long, then you
+    # will have 4 entries in the _hot.txt file: t=0yrs, 5yrs, 10yrs, 15yrs. We will always want the second entry, so
+    # this code will clip the hotstart to just that time entry. We, in this version, always restart the simulation from
+    # timestep 1, so we read in the _hot data, then immediately take the new rainfall CSV. We are choosing to use
+    # whatever temp/PET data there is at the start of the existing csvs. This is because we don't think this matters
+    # much for the short hotstarted run. If this is to be run properly, as a loop, then this data will need to be added
+    # else our error will propagate.
+    with open(hotstart_file, 'r') as file:
+        lines = file.readlines()
+
+    time_lines = []  # lines[0]
+    l = 0
+    while len(time_lines) <= 2:
+        if lines[l].startswith(" time="):
+            time_lines.append(l)
+        l += 1
+
+    new_hot_text = [lines[0]]
+    new_hot_text.extend(lines[time_lines[1] + 1:time_lines[2]])
+
+    with open(hotstart_file, 'w') as file:
+        file.writelines(new_hot_text)
+
+    # --- ADDED ---
+
 
 # Run the SHETRAN model:
 subprocess.call(['./Shetran-Linux', '-f', rundata_file])
