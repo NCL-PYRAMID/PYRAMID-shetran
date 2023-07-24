@@ -82,7 +82,7 @@ logger.info("output_path = {}".format(output_path))
 #   b_hot_rd: hotstart read, possible values: {"F", "T"}
 #   b_hot_pr: hotstart write (print), possible values: {"F", "T"}
 #   b_hot_ti: hotstart initiation value: Float 0.00 in hrs from start of
-#             simulation. Time when previous model is started.
+#             simulation. Time when previous model is started. <=7 characters.
 #   b_hot_st: hotstart output timestep: Float 0.00 in hrs from start of 
 #             simulation - i.e.-  when we want to restart the model
 #   etd_step: # [0 days 00:15:00]?
@@ -133,9 +133,9 @@ except IndexError as e:
     logger.error('Rundata file missing', exc_info=e)
     raise
 
-
+######################
 # HOTSTART SECTION
-# +++ ADDED +++
+######################
 # 0. Define functions
 # 1. Change the frd file to the correct hotstart parameters
 # 2. Make sure that b_hot_ti is <= etd_step
@@ -166,6 +166,36 @@ def frame_search(file_lines, string):
     return [x for x in range(0, len(file_lines)) if file_lines[x].startswith(string)][0]
 
 
+def check_hotstart_parameter(hs_param):
+    if hs_param not in ["T", "F"]:
+        emsg = f"ERROR: hotstart parameter '{hs_param}' incorrectly set. Should be 'T' or 'F'."
+        logger.error(emsg)
+        raise ValueError(emsg)
+
+
+def make_date(date_string):
+    return datetime.datetime.strptime(date_string, '%Y-%m-%d')
+
+
+# TODO - undo this botch by setting HiPIMS to read data from SHETRAN using 
+# parameters, instead of being hardcoded to toon monsoon. This code will make 
+# SHETRAN think that it is always starting on 28th June 2012. 
+toon_monsoon = make_date("2012-06-28")
+start_date_dt = make_date(start_date)
+end_date_dt = make_date(end_date)
+date_offset = toon_monsoon - start_date_dt
+
+start_date_dt += date_offset
+end_date_dt += date_offset
+start_date_toon = start_date_dt.strftime("%Y-%m-%d")
+end_date_toon = end_date_dt.strftime("%Y-%m-%d")
+
+
+# Raise errors if hotstart parameters are not T/F:
+check_hotstart_parameter(b_hot_rd)
+check_hotstart_parameter(b_hot_pr)
+        
+
 # -1- Edit the frd file to read / write the hotstart:
 if "T" in [b_hot_rd, b_hot_pr]:
     # Find the _frd.txt file for hotstart:
@@ -178,19 +208,8 @@ if "T" in [b_hot_rd, b_hot_pr]:
     # Create the new line of parameters. This will only change the rainfall parameter. Future hotstarts may require
     # more of the parameters changing, e.g. if you use PET of different resolution to the main simulation.
     edit_text(frd_file_path, ":FR26",
-              f"{b_hot_rd:>7}{b_hot_pr:>7}{b_hot_ti:>7}{b_hot_st:>7}{etd_step:>7}\n")
+              f"{b_hot_rd:>7}{b_hot_pr:>7}{b_hot_ti:>7}{b_hot_st:>7}\n")
 
-
-def check_hotstart_parameter(hs_param):
-    if hs_param not in ["T", "F"]:
-        emsg = f"ERROR: hotstart parameter '{hs_param}' incorrectly set. Should be 'T' or 'F'."
-        logger.error(emsg)
-        raise ValueError(emsg)
-
-
-# Raise errors if hotstart parameters are not T/F:
-check_hotstart_parameter(b_hot_rd)
-check_hotstart_parameter(b_hot_pr)
 
 if b_hot_rd == "T":
     # Find the _hot.txt file for hotstart:
@@ -217,9 +236,12 @@ if b_hot_rd == "T":
 
     # -3- Change the frd file to have the relevant time periods:
     # These should be taken from parameters so that the model knows when to start and end. The main purpose of this is
-    # so that it only runs for as long as there is inout data.
-    # edit_text("./" + frd_file_path, ":FR4", f"{SYEAR:>7}{SMONTH:>7}{SDAY:>7}{SHOUR:>7}{SMINUTE:>7}\n") # SHETRAN Start
-    # edit_text("./" + frd_file_path, ":FR5", f"{EYEAR:>7}{EMONTH:>7}{EDAY:>7}{EHOUR:>7}{EMINUTE:>7}\n") # SHETRAN End
+    # so that it only runs for as long as there is inout data. This will run up until 00:00 on the end date, not beyond.
+    # If you want to change the times then you will need to add this into the parameter set.
+    s_dates = [str(int(d)) for d in start_date_toon.split("-")]
+    e_dates = [str(int(d)) for d in end_date_toon.split("-")]
+    edit_text(frd_file_path, ":FR4", f"{s_dates[0]:>7}{s_dates[1]:>7}{s_dates[2]:>7}{0:>7}{0:>7}\n")  # Start
+    edit_text(frd_file_path, ":FR6", f"{e_dates[0]:>7}{e_dates[1]:>7}{e_dates[2]:>7}{0:>7}{0:>7}\n")  # End
 
     # -4- Edit the run data file to find the hotstart file:
     # Direct the rundata file to the hotstart data. This is needed as the simulation _inputs.txt files have been made
@@ -258,7 +280,18 @@ if b_hot_rd == "T":
     with open(hotstart_file, 'w') as file:
         file.writelines(new_hot_text)
 
-    # --- ADDED ---
+
+    # -7- Change Visualisation Plan:
+    # Change the visualisation plan to reduce outputs and to ensure hourly outputs:
+    try:
+        vis_plan_file = glob(os.path.join(run_path, '*_visualisation_plan.txt'))[0]
+    except IndexError:
+        raise Exception('visualisation_plan file missing')
+    print(vis_plan_file)
+
+    for line in ["6", "5", "3", "2", "1"]:
+    visualisation_plan_remove_item(line, vis_plan_file)
+    edit_text(vis_plan_file, "9 1 !", "1 876000 !every hour for 10 years, or until the end of the simulation.\n")
 
 
 # Run the SHETRAN model:
