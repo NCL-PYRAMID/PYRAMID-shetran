@@ -88,7 +88,10 @@ logger.info("output_path = {}".format(output_path))
 #   etd_step: # [0 days 00:15:00]?
 ###############################################################################
 def validate_boolean_parameter(p_string):
-    p_val = os.getenv(p_string, "false")
+    # Boolean parameters are passed in from DAFNI as "True" and "False"
+    # but to avoid any pointless errors e.g. maybe this might change,
+    # it is a good idea to lowercase the parameter strings.
+    p_val = str.lower(os.getenv(p_string, "false"))
     if p_val == "true":
       p_val = "T"
     elif p_val == "false":
