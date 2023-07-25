@@ -374,7 +374,7 @@ if b_hot_rd == "T":
 
     for line in ["6", "5", "3", "2", "1"]:
         visualisation_plan_remove_item(line, vis_plan_file)
-        edit_text(vis_plan_file, "9 1 !", "1 876000 !every hour for 10 years, or until the end of the simulation.\n")
+    edit_text(vis_plan_file, "9 1 !", "1 876000 !every hour for 10 years, or until the end of the simulation.\n")
 
 
 # Run the SHETRAN model:
