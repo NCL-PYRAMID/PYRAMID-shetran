@@ -105,7 +105,7 @@ def validate_boolean_parameter(p_string):
 # Simulation duration
 start_date = os.getenv("RUN_START_DATE", "2023-06-20")
 end_date = os.getenv("RUN_END_DATE", "2023-06-30")
-toon_monsoon = os.getenv("TOON_MONSOON", "2012-06-28")
+# toon_monsoon = os.getenv("TOON_MONSOON", "2012-06-28")
 
 # Hotstart boolean parameters
 b_hot_rd = validate_boolean_parameter("B_HOT_RD")
@@ -249,16 +249,16 @@ def visualisation_plan_remove_item(item_number, vis_file_in=str, vis_file_out=No
 
 # TODO - undo this botch by setting HiPIMS to read data from SHETRAN using 
 # parameters, instead of being hardcoded to toon monsoon. This code will make 
-# SHETRAN think that it is always starting on 28th June 2012.
-toon_monsoon_dt = make_date(toon_monsoon)
-start_date_dt = make_date(start_date)
-end_date_dt = make_date(end_date)
-date_offset = toon_monsoon_dt - start_date_dt
-
-start_date_dt += date_offset
-end_date_dt += date_offset
-start_date_toon = start_date_dt.strftime("%Y-%m-%d")
-end_date_toon = end_date_dt.strftime("%Y-%m-%d")
+# SHETRAN think that it is always starting on 28th June 2012. 27/7/23 this was removed
+# as HiPIMS has been adapted to extract data for the hotstart period, not just the toon monsoon.
+# toon_monsoon_dt = make_date(toon_monsoon)
+# start_date_dt = make_date(start_date)
+# end_date_dt = make_date(end_date)
+# date_offset = toon_monsoon_dt - start_date_dt
+# start_date_dt += date_offset
+# end_date_dt += date_offset
+# start_date_toon = start_date_dt.strftime("%Y-%m-%d")
+# end_date_toon = end_date_dt.strftime("%Y-%m-%d")
 
 
 # Raise errors if hotstart parameters are not T/F:
@@ -316,8 +316,8 @@ if b_hot_rd == "T":
     # These should be taken from parameters so that the model knows when to start and end. The main purpose of this is
     # so that it only runs for as long as there is inout data. This will run up until 00:00 on the end date, not beyond.
     # If you want to change the times then you will need to add this into the parameter set.
-    s_dates = [str(int(d)) for d in start_date_toon.split("-")]
-    e_dates = [str(int(d)) for d in end_date_toon.split("-")]
+    s_dates = [str(int(d)) for d in start_date.split("-")]
+    e_dates = [str(int(d)) for d in end_date.split("-")]
     edit_text(frd_file_path, ":FR4", f"{s_dates[0]:>7}{s_dates[1]:>7}{s_dates[2]:>7}{0:>7}{0:>7}\n")  # Start
     edit_text(frd_file_path, ":FR6", f"{e_dates[0]:>7}{e_dates[1]:>7}{e_dates[2]:>7}{0:>7}{0:>7}\n")  # End
 
