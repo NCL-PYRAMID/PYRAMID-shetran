@@ -39,12 +39,12 @@ spec:
         default: "2023-06-30"
         required: true
 
-      - name: TOON_MONSOON
-        title: Date of Toon Monsoon
-        description: Forces SHETRAN to output data with dates starting on this day, that can then be found by HiPIMS, which searches for 28/06/2012.
-        type: string
-        default: "2012-06-28"
-        required: true
+      # - name: TOON_MONSOON
+      #   title: Date of Toon Monsoon
+      #   description: Forces SHETRAN to output data with dates starting on this day, that can then be found by HiPIMS, which searches for 28/06/2012.
+      #   type: string
+      #   default: "2012-06-28"
+      #   required: true
 
       - name: B_HOT_RD
         title: SHETRAN hotstart initial conditions reading mode
